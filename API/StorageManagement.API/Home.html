@@ -1,0 +1,1832 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Storage Management System</title>
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .user-info {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255,255,255,0.1);
+            padding: 10px 15px;
+            border-radius: 20px;
+            display: none;
+        }
+
+        .logout-btn {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 15px;
+            cursor: pointer;
+            margin-left: 10px;
+            font-size: 12px;
+        }
+
+        .logout-btn:hover {
+            background: #c0392b;
+        }
+
+        .main-content {
+            padding: 40px;
+        }
+
+        .section {
+            margin-bottom: 40px;
+            padding: 30px;
+            border: 2px solid #ecf0f1;
+            border-radius: 10px;
+            background: #fafafa;
+        }
+
+        .section h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="password"],
+        input[type="number"],
+        select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #bdc3c7;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        input[type="text"]:focus,
+        input[type="email"]:focus,
+        input[type="password"]:focus,
+        input[type="number"]:focus,
+        select:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #27ae60 0%, #229954 100%);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+        }
+
+        .btn-info {
+            background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
+        }
+
+        .response {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            white-space: pre-wrap;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .response.success {
+            background: #d5f4e6;
+            border: 2px solid #27ae60;
+            color: #1e8449;
+        }
+
+        .response.error {
+            background: #fadbd8;
+            border: 2px solid #e74c3c;
+            color: #a93226;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .search-container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .search-input {
+            position: relative;
+            margin-bottom: 15px;
+        }
+
+        .search-input input {
+            padding-left: 45px;
+            font-size: 16px;
+            border: 2px solid #e0e0e0;
+            transition: all 0.3s;
+        }
+
+        .search-input input:focus {
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #7f8c8d;
+            font-size: 18px;
+        }
+
+        .search-filters {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .filter-btn {
+            padding: 8px 16px;
+            border: 2px solid #e0e0e0;
+            background: white;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+
+        .filter-btn:hover {
+            border-color: #3498db;
+            background: #f8f9fa;
+        }
+
+        .filter-btn.active {
+            background: #3498db;
+            color: white;
+            border-color: #3498db;
+        }
+
+        .search-results {
+            margin-top: 15px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 5px;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .highlight {
+            background: #fff3cd;
+            padding: 2px 4px;
+            border-radius: 3px;
+            font-weight: 600;
+        }
+
+        .update-hint {
+            background: #e8f4fd;
+            border: 1px solid #bee5eb;
+            border-radius: 5px;
+            padding: 10px;
+            margin-bottom: 15px;
+            font-size: 14px;
+            color: #0c5460;
+        }
+
+        .current-item-info {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+
+        .current-item-info h4 {
+            color: #495057;
+            margin-bottom: 10px;
+        }
+
+        .current-item-info p {
+            margin: 5px 0;
+            color: #6c757d;
+        }
+
+        .items-table, .suppliers-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .items-table th, .items-table td,
+        .suppliers-table th, .suppliers-table td {
+            border: 1px solid #ddd;
+            padding: 12px 15px;
+            text-align: left;
+            vertical-align: middle;
+        }
+
+        .items-table th, .suppliers-table th {
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            color: white;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 14px;
+            letter-spacing: 0.5px;
+        }
+
+        .items-table tr:nth-child(even),
+        .suppliers-table tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        .items-table tr:hover,
+        .suppliers-table tr:hover {
+            background-color: #e8f4fd;
+            transition: background-color 0.3s;
+        }
+
+        .items-table button, .suppliers-table button {
+            padding: 6px 12px;
+            font-size: 14px;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            margin-right: 5px;
+            transition: all 0.3s;
+        }
+
+        .items-table .btn-danger, .suppliers-table .btn-danger {
+            background-color: #e74c3c;
+            color: white;
+        }
+
+        .items-table .btn-warning, .suppliers-table .btn-warning {
+            background-color: #f39c12;
+            color: white;
+        }
+
+        .items-table .btn-danger:hover, .suppliers-table .btn-danger:hover {
+            background-color: #c0392b;
+            transform: translateY(-1px);
+        }
+
+        .items-table .btn-warning:hover, .suppliers-table .btn-warning:hover {
+            background-color: #d68910;
+            transform: translateY(-1px);
+        }
+
+        .tab-container {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #ecf0f1;
+        }
+
+        .tab-button {
+            padding: 15px 30px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            color: #7f8c8d;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .tab-button.active {
+            color: #3498db;
+            border-bottom-color: #3498db;
+        }
+
+        .tab-button:hover {
+            color: #2980b9;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .main-content {
+                padding: 20px;
+            }
+            
+            .header {
+                padding: 20px;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+
+            .user-info {
+                position: static;
+                margin-top: 15px;
+                text-align: center;
+            }
+
+            .search-filters {
+                justify-content: center;
+            }
+
+            .items-table, .suppliers-table {
+                font-size: 14px;
+            }
+            
+            .items-table th, .items-table td,
+            .suppliers-table th, .suppliers-table td {
+                padding: 8px 10px;
+            }
+            
+            .items-table button, .suppliers-table button {
+                padding: 4px 8px;
+                font-size: 12px;
+            }
+
+            .tab-container {
+                flex-direction: column;
+            }
+        }
+
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+
+        .status-online {
+            background: #27ae60;
+            box-shadow: 0 0 0 3px rgba(39, 174, 96, 0.3);
+        }
+
+        .status-offline {
+            background: #e74c3c;
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .welcome-message {
+            background: linear-gradient(135deg, #27ae60 0%, #229954 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .welcome-message h3 {
+            margin-bottom: 10px;
+            font-size: 1.5em;
+        }
+
+        .login-required {
+            text-align: center;
+            padding: 40px;
+            color: #7f8c8d;
+            font-size: 1.2em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏪 Storage Management System</h1>
+            <p>Manage your inventory and suppliers with ease</p>
+            <p>
+                <span class="status-indicator status-online"></span>
+                API Status: <span id="apiStatus">Checking...</span>
+            </p>
+            
+            <!-- User Info Display (shown when logged in) -->
+            <div id="userInfo" class="user-info">
+                <span>Welcome, <strong id="currentUser">User</strong></span>
+                <button class="logout-btn" onclick="logout()">Logout</button>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <!-- Welcome Message (shown when logged in) -->
+            <div id="welcomeMessage" class="welcome-message hidden">
+                <h3>🎉 Welcome to your Storage Management Dashboard!</h3>
+                <p>You can now manage your inventory items and suppliers below.</p>
+            </div>
+
+            <!-- User Authentication Section (hidden when logged in) -->
+            <div id="authSection" class="section">
+                <h2>👤 User Authentication</h2>
+                
+                <div class="form-row">
+                    <div>
+                        <h3>Register New User</h3>
+                        <div class="form-group">
+                            <label for="regFirstName">First Name:</label>
+                            <input type="text" id="regFirstName" placeholder="Enter first name">
+                        </div>
+                        <div class="form-group">
+                            <label for="regLastName">Last Name:</label>
+                            <input type="text" id="regLastName" placeholder="Enter last name">
+                        </div>
+                        <div class="form-group">
+                            <label for="regEmail">Email:</label>
+                            <input type="email" id="regEmail" placeholder="Enter email">
+                        </div>
+                        <div class="form-group">
+                            <label for="regUsername">Username:</label>
+                            <input type="text" id="regUsername" placeholder="Enter username">
+                        </div>
+                        <div class="form-group">
+                            <label for="regPassword">Password:</label>
+                            <input type="password" id="regPassword" placeholder="Enter password">
+                        </div>
+                        <button class="btn btn-success" onclick="registerUser()">Register User</button>
+                    </div>
+
+                    <div>
+                        <h3>Login</h3>
+                        <div class="form-group">
+                            <label for="loginUsername">Username:</label>
+                            <input type="text" id="loginUsername" placeholder="Enter username">
+                        </div>
+                        <div class="form-group">
+                            <label for="loginPassword">Password:</label>
+                            <input type="password" id="loginPassword" placeholder="Enter password">
+                        </div>
+                        <button class="btn" onclick="loginUser()">Login</button>
+                    </div>
+                </div>
+                
+                <div id="authResponse" class="response" style="display: none;"></div>
+            </div>
+
+            <!-- Management Section with Tabs (shown only when logged in) -->
+            <div id="managementSection" class="section hidden">
+                <h2>📦 Management Dashboard</h2>
+                
+                <!-- Tab Navigation -->
+                <div class="tab-container">
+                    <button class="tab-button active" onclick="showTab('items')">📦 Storage Items</button>
+                    <button class="tab-button" onclick="showTab('suppliers')">🏢 Suppliers</button>
+                </div>
+
+                <!-- Storage Items Tab -->
+                <div id="itemsTab" class="tab-content active">
+                    <div class="form-row">
+                        <div>
+                            <h3>Add New Item</h3>
+                            <div class="form-group">
+                                <label for="itemName">Item Name:</label>
+                                <input type="text" id="itemName" placeholder="Enter item name">
+                            </div>
+                            <div class="form-group">
+                                <label for="itemQuantity">Quantity:</label>
+                                <input type="number" id="itemQuantity" placeholder="Enter quantity">
+                            </div>
+                            <div class="form-group">
+                                <label for="itemLocation">Location:</label>
+                                <input type="text" id="itemLocation" placeholder="Enter location">
+                            </div>
+                            <div class="form-group">
+                                <label for="itemPrice">Price (optional):</label>
+                                <input type="number" step="0.01" id="itemPrice" placeholder="Enter price">
+                            </div>
+                            <div class="form-group">
+                                <label for="itemSupplier">Supplier (optional):</label>
+                                <select id="itemSupplier">
+                                    <option value="">Select a supplier</option>
+                                </select>
+                            </div>
+                            <button class="btn btn-success" onclick="addItem()">Add Item</button>
+                        </div>
+
+                        <div>
+                            <h3>Update Item (Partial Updates Supported)</h3>
+                            
+                            <div class="update-hint">
+                                💡 <strong>Tip:</strong> Leave fields empty to keep existing values. Only fill in the fields you want to change.
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="updateId">Item ID:</label>
+                                <input type="number" id="updateId" placeholder="Enter item ID" onchange="loadItemForUpdate()">
+                            </div>
+                            
+                            <!-- Current item info display -->
+                            <div id="currentItemInfo" class="current-item-info" style="display: none;">
+                                <h4>Current Item Details:</h4>
+                                <p><strong>Name:</strong> <span id="currentName">-</span></p>
+                                <p><strong>Quantity:</strong> <span id="currentQuantity">-</span></p>
+                                <p><strong>Location:</strong> <span id="currentLocation">-</span></p>
+                                <p><strong>Price:</strong> <span id="currentPrice">-</span></p>
+                                <p><strong>Supplier:</strong> <span id="currentSupplier">-</span></p>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="updateName">New Name (optional):</label>
+                                <input type="text" id="updateName" placeholder="Leave empty to keep current name">
+                            </div>
+                            <div class="form-group">
+                                <label for="updateQuantity">New Quantity (optional):</label>
+                                <input type="number" id="updateQuantity" placeholder="Leave empty to keep current quantity">
+                            </div>
+                            <div class="form-group">
+                                <label for="updateLocation">New Location (optional):</label>
+                                <input type="text" id="updateLocation" placeholder="Leave empty to keep current location">
+                            </div>
+                            <div class="form-group">
+                                <label for="updatePrice">New Price (optional):</label>
+                                <input type="number" step="0.01" id="updatePrice" placeholder="Leave empty to keep current price">
+                            </div>
+                            <div class="form-group">
+                                <label for="updateSupplier">New Supplier (optional):</label>
+                                <select id="updateSupplier">
+                                    <option value="">Select a supplier</option>
+                                </select>
+                            </div>
+                            <button class="btn btn-warning" onclick="updateItem()">Update Item</button>
+                            <button class="btn btn-info" onclick="loadItemForUpdate()">Load Current Data</button>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 30px;">
+                        <button class="btn" onclick="getAllItems()">🔄 Refresh Items</button>
+                        <button class="btn btn-danger" onclick="deleteItemPrompt()">🗑️ Delete Item</button>
+                    </div>
+                </div>
+
+                <!-- Suppliers Tab -->
+                <div id="suppliersTab" class="tab-content">
+                    <div class="form-row">
+                        <div>
+                            <h3>Add New Supplier</h3>
+                            <div class="form-group">
+                                <label for="supplierName">Name (optional):</label>
+                                <input type="text" id="supplierName" placeholder="Enter supplier name">
+                            </div>
+                            <div class="form-group">
+                                <label for="supplierAfm">ΑΦΜ (optional):</label>
+                                <input type="text" id="supplierAfm" placeholder="Enter ΑΦΜ">
+                            </div>
+                            <div class="form-group">
+                                <label for="supplierPhone">Phone Number (optional):</label>
+                                <input type="text" id="supplierPhone" placeholder="Enter phone number">
+                            </div>
+                            <div class="form-group">
+                                <label for="supplierAddress">Address (optional):</label>
+                                <input type="text" id="supplierAddress" placeholder="Enter address">
+                            </div>
+                            <div class="form-group">
+                                <label for="supplierEmail">Email (optional):</label>
+                                <input type="email" id="supplierEmail" placeholder="Enter email">
+                            </div>
+                            <button class="btn btn-success" onclick="addSupplier()">Add Supplier</button>
+                        </div>
+
+                        <div>
+                            <h3>Update Supplier (Partial Updates Supported)</h3>
+                            
+                            <div class="update-hint">
+                                💡 <strong>Tip:</strong> Leave fields empty to keep existing values. Only fill in the fields you want to change.
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="updateSupplierId">Supplier ID:</label>
+                                <input type="number" id="updateSupplierId" placeholder="Enter supplier ID" onchange="loadSupplierForUpdate()">
+                            </div>
+                            
+                            <!-- Current supplier info display -->
+                            <div id="currentSupplierInfo" class="current-item-info" style="display: none;">
+                                <h4>Current Supplier Details:</h4>
+                                <p><strong>Name:</strong> <span id="currentSupplierName">-</span></p>
+                                <p><strong>ΑΦΜ:</strong> <span id="currentSupplierAfm">-</span></p>
+                                <p><strong>Phone:</strong> <span id="currentSupplierPhone">-</span></p>
+                                <p><strong>Address:</strong> <span id="currentSupplierAddress">-</span></p>
+                                <p><strong>Email:</strong> <span id="currentSupplierEmail">-</span></p>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="updateSupplierName">New Name (optional):</label>
+                                <input type="text" id="updateSupplierName" placeholder="Leave empty to keep current name">
+                            </div>
+                            <div class="form-group">
+                                <label for="updateSupplierAfm">New ΑΦΜ (optional):</label>
+                                <input type="text" id="updateSupplierAfm" placeholder="Leave empty to keep current ΑΦΜ">
+                            </div>
+                            <div class="form-group">
+                                <label for="updateSupplierPhone">New Phone (optional):</label>
+                                <input type="text" id="updateSupplierPhone" placeholder="Leave empty to keep current phone">
+                            </div>
+                            <div class="form-group">
+                                <label for="updateSupplierAddress">New Address (optional):</label>
+                                <input type="text" id="updateSupplierAddress" placeholder="Leave empty to keep current address">
+                            </div>
+                            <div class="form-group">
+                                <label for="updateSupplierEmail">New Email (optional):</label>
+                                <input type="email" id="updateSupplierEmail" placeholder="Leave empty to keep current email">
+                            </div>
+                            <button class="btn btn-warning" onclick="updateSupplier()">Update Supplier</button>
+                            <button class="btn btn-info" onclick="loadSupplierForUpdate()">Load Current Data</button>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 30px;">
+                        <button class="btn" onclick="getAllSuppliers()">🔄 Refresh Suppliers</button>
+                        <button class="btn btn-danger" onclick="deleteSupplierPrompt()">🗑️ Delete Supplier</button>
+                    </div>
+                </div>
+                
+                <div id="managementResponse" class="response" style="display: none;"></div>
+            </div>
+
+            <!-- Items Display Section with Table (shown only when logged in) -->
+            <div id="inventorySection" class="section hidden">
+                <h2>📋 Current Inventory</h2>
+                
+                <!-- Intelligent Search Container -->
+                <div class="search-container">
+                    <div class="search-input">
+                        <span class="search-icon">🔍</span>
+                        <input type="text" id="searchInput" placeholder="Search items by name, location, quantity, price, or supplier..." oninput="performSearch()">
+                    </div>
+                    
+                    <div class="search-filters">
+                        <span style="font-weight: 600; color: #2c3e50;">Filter by:</span>
+                        <button class="filter-btn active" onclick="setSearchFilter('all')">All</button>
+                        <button class="filter-btn" onclick="setSearchFilter('name')">Name</button>
+                        <button class="filter-btn" onclick="setSearchFilter('location')">Location</button>
+                        <button class="filter-btn" onclick="setSearchFilter('quantity')">Quantity</button>
+                        <button class="filter-btn" onclick="setSearchFilter('price')">Price</button>
+                        <button class="filter-btn" onclick="setSearchFilter('supplier')">Supplier</button>
+                        <button class="filter-btn" onclick="clearSearch()">Clear</button>
+                    </div>
+                    
+                    <div id="searchResults" class="search-results" style="display: none;"></div>
+                </div>
+                
+                <table id="itemsTable" class="items-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Quantity</th>
+                            <th>Location</th>
+                            <th>Price</th>
+                            <th>Supplier</th>
+                            <th>Created</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="itemsDisplay">
+                        <tr><td colspan="8" style="text-align:center; padding: 40px;">Please log in to view your inventory</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Suppliers Display Section with Table (shown only when logged in) -->
+            <div id="suppliersSection" class="section hidden">
+                <h2>🏢 Suppliers Directory</h2>
+                
+                <!-- Suppliers Search Container -->
+                <div class="search-container">
+                    <div class="search-input">
+                        <span class="search-icon">🔍</span>
+                        <input type="text" id="suppliersSearchInput" placeholder="Search suppliers by name, ΑΦΜ, phone, address, or email..." oninput="performSuppliersSearch()">
+                    </div>
+                    
+                    <div class="search-filters">
+                        <span style="font-weight: 600; color: #2c3e50;">Filter by:</span>
+                        <button class="filter-btn active" onclick="setSuppliersSearchFilter('all')">All</button>
+                        <button class="filter-btn" onclick="setSuppliersSearchFilter('name')">Name</button>
+                        <button class="filter-btn" onclick="setSuppliersSearchFilter('afm')">ΑΦΜ</button>
+                        <button class="filter-btn" onclick="setSuppliersSearchFilter('phone')">Phone</button>
+                        <button class="filter-btn" onclick="setSuppliersSearchFilter('email')">Email</button>
+                        <button class="filter-btn" onclick="clearSuppliersSearch()">Clear</button>
+                    </div>
+                    
+                    <div id="suppliersSearchResults" class="search-results" style="display: none;"></div>
+                </div>
+                
+                <table id="suppliersTable" class="suppliers-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>ΑΦΜ</th>
+                            <th>Phone</th>
+                            <th>Address</th>
+                            <th>Email</th>
+                            <th>Created</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="suppliersDisplay">
+                        <tr><td colspan="8" style="text-align:center; padding: 40px;">Please log in to view your suppliers</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // API Base URL - Change this to your deployed API URL if needed
+        const API_BASE_URL = 'http://localhost:5027/api';
+        
+        // User session management
+        let currentUser = null;
+        let isLoggedIn = false;
+        
+        // Search functionality variables
+        let allItems = [];
+        let allSuppliers = [];
+        let currentSearchFilter = 'all';
+        let currentSearchQuery = '';
+        let currentSuppliersSearchFilter = 'all';
+        let currentSuppliersSearchQuery = '';
+
+        // Check API status and user session on page load
+        window.onload = function() {
+            checkApiStatus();
+            checkUserSession();
+        };
+
+        // Enhanced API status check with proper error handling
+        async function checkApiStatus() {
+            const statusElement = document.getElementById('apiStatus');
+            const indicatorElement = document.querySelector('.status-indicator');
+            
+            try {
+                statusElement.textContent = 'Checking...';
+                indicatorElement.className = 'status-indicator status-offline';
+                
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => {
+                    controller.abort();
+                }, 5000);
+                
+                const response = await fetch(`${API_BASE_URL}/storageitems`, {
+                    method: 'GET',
+                    signal: controller.signal,
+                    cache: 'no-cache',
+                    headers: {
+                        'Cache-Control': 'no-cache',
+                        'Pragma': 'no-cache'
+                    }
+                });
+                
+                clearTimeout(timeoutId);
+                
+                if (response.ok) {
+                    statusElement.textContent = 'Online';
+                    indicatorElement.className = 'status-indicator status-online';
+                } else {
+                    throw new Error(`Server responded with status ${response.status}`);
+                }
+                
+            } catch (error) {
+                if (error.name === 'AbortError') {
+                    statusElement.textContent = 'Timeout';
+                } else {
+                    statusElement.textContent = 'Offline';
+                }
+                
+                indicatorElement.className = 'status-indicator status-offline';
+            }
+        }
+
+        // Tab management
+        function showTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            document.querySelectorAll('.tab-button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            document.getElementById(tabName + 'Tab').classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        // Check if user is logged in
+        function checkUserSession() {
+            const savedUser = localStorage.getItem('currentUser');
+            if (savedUser) {
+                currentUser = JSON.parse(savedUser);
+                isLoggedIn = true;
+                updateUIForLoggedInUser();
+            } else {
+                updateUIForLoggedOutUser();
+            }
+        }
+
+        // Update UI for logged in user
+        function updateUIForLoggedInUser() {
+            document.getElementById('authSection').classList.add('hidden');
+            document.getElementById('managementSection').classList.remove('hidden');
+            document.getElementById('inventorySection').classList.remove('hidden');
+            document.getElementById('suppliersSection').classList.remove('hidden');
+            document.getElementById('welcomeMessage').classList.remove('hidden');
+            
+            document.getElementById('userInfo').style.display = 'block';
+            document.getElementById('currentUser').textContent = currentUser.username || 'User';
+            
+            setTimeout(() => {
+                if (document.getElementById('apiStatus').textContent === 'Online') {
+                    getAllItems();
+                    getAllSuppliers();
+                    loadSuppliersIntoDropdown();
+                }
+            }, 1000);
+        }
+
+        // Update UI for logged out user
+        function updateUIForLoggedOutUser() {
+            document.getElementById('authSection').classList.remove('hidden');
+            document.getElementById('managementSection').classList.add('hidden');
+            document.getElementById('inventorySection').classList.add('hidden');
+            document.getElementById('suppliersSection').classList.add('hidden');
+                            if (error.name === 'AbortError') {
+                    statusElement.textContent = 'Timeout';
+                } else {
+                    statusElement.textContent = 'Offline';
+                }
+                
+                indicatorElement.className = 'status-indicator status-offline';
+            }
+
+        // Tab management
+        function showTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            document.querySelectorAll('.tab-button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            document.getElementById(tabName + 'Tab').classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        // Check if user is logged in
+        function checkUserSession() {
+            const savedUser = localStorage.getItem('currentUser');
+            if (savedUser) {
+                currentUser = JSON.parse(savedUser);
+                isLoggedIn = true;
+                updateUIForLoggedInUser();
+            } else {
+                updateUIForLoggedOutUser();
+            }
+        }
+
+        // Update UI for logged in user
+        function updateUIForLoggedInUser() {
+            document.getElementById('authSection').classList.add('hidden');
+            document.getElementById('managementSection').classList.remove('hidden');
+            document.getElementById('inventorySection').classList.remove('hidden');
+            document.getElementById('suppliersSection').classList.remove('hidden');
+            document.getElementById('welcomeMessage').classList.remove('hidden');
+            
+            document.getElementById('userInfo').style.display = 'block';
+            document.getElementById('currentUser').textContent = currentUser.username || 'User';
+            
+            setTimeout(() => {
+                if (document.getElementById('apiStatus').textContent === 'Online') {
+                    getAllItems();
+                    getAllSuppliers();
+                    loadSuppliersIntoDropdown();
+                }
+            }, 1000);
+        }
+
+        // Update UI for logged out user
+        function updateUIForLoggedOutUser() {
+            document.getElementById('authSection').classList.remove('hidden');
+            document.getElementById('managementSection').classList.add('hidden');
+            document.getElementById('inventorySection').classList.add('hidden');
+            document.getElementById('suppliersSection').classList.add('hidden');
+            document.getElementById('welcomeMessage').classList.add('hidden');
+            document.getElementById('userInfo').style.display = 'none';
+            
+            document.getElementById('itemsDisplay').innerHTML = `
+                <tr><td colspan="8" style="text-align:center; padding: 40px;">Please log in to view your inventory</td></tr>
+            `;
+            document.getElementById('suppliersDisplay').innerHTML = `
+                <tr><td colspan="8" style="text-align:center; padding: 40px;">Please log in to view your suppliers</td></tr>
+            `;
+        }
+
+        // Logout function
+        function logout() {
+            currentUser = null;
+            isLoggedIn = false;
+            localStorage.removeItem('currentUser');
+            updateUIForLoggedOutUser();
+            showResponse('authResponse', 'Logged out successfully', true);
+        }
+
+        // User Registration
+        async function registerUser() {
+            const userData = {
+                firstName: document.getElementById('regFirstName').value,
+                lastName: document.getElementById('regLastName').value,
+                email: document.getElementById('regEmail').value,
+                username: document.getElementById('regUsername').value,
+                password: document.getElementById('regPassword').value
+            };
+
+            if (!userData.firstName || !userData.lastName || !userData.email || !userData.username || !userData.password) {
+                showResponse('authResponse', 'Please fill in all fields', false);
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/auth/register`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(userData)
+                });
+
+                const result = await response.text();
+                showResponse('authResponse', result, response.ok);
+                
+                if (response.ok) {
+                    document.getElementById('regFirstName').value = '';
+                    document.getElementById('regLastName').value = '';
+                    document.getElementById('regEmail').value = '';
+                    document.getElementById('regUsername').value = '';
+                    document.getElementById('regPassword').value = '';
+                    showResponse('authResponse', 'Registration successful! You can now log in.', true);
+                }
+            } catch (error) {
+                showResponse('authResponse', `Error: ${error.message}`, false);
+            }
+        }
+
+        // User Login
+        async function loginUser() {
+            const loginData = {
+                username: document.getElementById('loginUsername').value,
+                password: document.getElementById('loginPassword').value
+            };
+
+            if (!loginData.username || !loginData.password) {
+                showResponse('authResponse', 'Please enter both username and password', false);
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(loginData)
+                });
+
+                const result = await response.text();
+                
+                if (response.ok) {
+                    currentUser = {
+                        username: loginData.username,
+                        loginTime: new Date().toISOString()
+                    };
+                    isLoggedIn = true;
+                    localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                    
+                    document.getElementById('loginUsername').value = '';
+                    document.getElementById('loginPassword').value = '';
+                    
+                    updateUIForLoggedInUser();
+                    showResponse('authResponse', 'Login successful! Welcome to your dashboard.', true);
+                } else {
+                    showResponse('authResponse', result, false);
+                }
+            } catch (error) {
+                showResponse('authResponse', `Error: ${error.message}`, false);
+            }
+        }
+
+        // Load suppliers into dropdown
+        async function loadSuppliersIntoDropdown() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/suppliers`);
+                const suppliers = await response.json();
+                
+                const itemSupplierSelect = document.getElementById('itemSupplier');
+                const updateSupplierSelect = document.getElementById('updateSupplier');
+                
+                itemSupplierSelect.innerHTML = '<option value="">Select a supplier</option>';
+                updateSupplierSelect.innerHTML = '<option value="">Select a supplier</option>';
+                
+                suppliers.forEach(supplier => {
+                    const option1 = document.createElement('option');
+                    option1.value = supplier.id;
+                    option1.textContent = supplier.name || `Supplier ${supplier.id}`;
+                    itemSupplierSelect.appendChild(option1);
+                    
+                    const option2 = document.createElement('option');
+                    option2.value = supplier.id;
+                    option2.textContent = supplier.name || `Supplier ${supplier.id}`;
+                    updateSupplierSelect.appendChild(option2);
+                });
+            } catch (error) {
+                console.error('Error loading suppliers:', error);
+            }
+        }
+
+        // STORAGE ITEMS FUNCTIONS
+
+        async function addItem() {
+            if (!isLoggedIn) {
+                showResponse('managementResponse', 'Please log in first', false);
+                return;
+            }
+
+            const itemData = {
+                name: document.getElementById('itemName').value,
+                quantity: parseInt(document.getElementById('itemQuantity').value) || 0,
+                location: document.getElementById('itemLocation').value,
+                price: parseFloat(document.getElementById('itemPrice').value) || null,
+                supplierId: parseInt(document.getElementById('itemSupplier').value) || null
+            };
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/storageitems`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(itemData)
+                });
+
+                const result = await response.text();
+                showResponse('managementResponse', result, response.ok);
+                
+                if (response.ok) {
+                    document.getElementById('itemName').value = '';
+                    document.getElementById('itemQuantity').value = '';
+                    document.getElementById('itemLocation').value = '';
+                    document.getElementById('itemPrice').value = '';
+                    document.getElementById('itemSupplier').value = '';
+                    getAllItems();
+                }
+            } catch (error) {
+                showResponse('managementResponse', `Error: ${error.message}`, false);
+            }
+        }
+
+        async function getAllItems() {
+            if (!isLoggedIn) return;
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/storageitems`);
+                const items = await response.json();
+                
+                allItems = items;
+                displayItems(items);
+                showResponse('managementResponse', `Found ${items.length} items`, true);
+            } catch (error) {
+                showResponse('managementResponse', `Error: ${error.message}`, false);
+            }
+        }
+
+        async function loadItemForUpdate() {
+            const id = document.getElementById('updateId').value;
+            
+            if (!id) {
+                document.getElementById('currentItemInfo').style.display = 'none';
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/storageitems/${id}`);
+                
+                if (response.ok) {
+                    const item = await response.json();
+                    
+                    document.getElementById('currentName').textContent = item.name;
+                    document.getElementById('currentQuantity').textContent = item.quantity;
+                    document.getElementById('currentLocation').textContent = item.location;
+                    document.getElementById('currentPrice').textContent = item.price ? `€${item.price}` : 'Not set';
+                    document.getElementById('currentSupplier').textContent = item.supplierName || 'No supplier';
+                    document.getElementById('currentItemInfo').style.display = 'block';
+                    
+                    showResponse('managementResponse', `Loaded item: ${item.name}`, true);
+                } else {
+                    document.getElementById('currentItemInfo').style.display = 'none';
+                    showResponse('managementResponse', `Item with ID ${id} not found`, false);
+                }
+            } catch (error) {
+                document.getElementById('currentItemInfo').style.display = 'none';
+                showResponse('managementResponse', `Error loading item: ${error.message}`, false);
+            }
+        }
+
+        async function updateItem() {
+            if (!isLoggedIn) {
+                showResponse('managementResponse', 'Please log in first', false);
+                return;
+            }
+
+            const id = document.getElementById('updateId').value;
+            
+            if (!id) {
+                showResponse('managementResponse', 'Please enter an item ID', false);
+                return;
+            }
+
+            const itemData = {
+                name: document.getElementById('updateName').value.trim(),
+                quantity: parseInt(document.getElementById('updateQuantity').value) || 0,
+                location: document.getElementById('updateLocation').value.trim(),
+                price: parseFloat(document.getElementById('updatePrice').value) || null,
+                supplierId: parseInt(document.getElementById('updateSupplier').value) || null
+            };
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/storageitems/${id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(itemData)
+                });
+
+                if (response.ok) {
+                    showResponse('managementResponse', `Item updated successfully!`, true);
+                    
+                    document.getElementById('updateId').value = '';
+                    document.getElementById('updateName').value = '';
+                    document.getElementById('updateQuantity').value = '';
+                    document.getElementById('updateLocation').value = '';
+                    document.getElementById('updatePrice').value = '';
+                    document.getElementById('updateSupplier').value = '';
+                    document.getElementById('currentItemInfo').style.display = 'none';
+                    getAllItems();
+                } else {
+                    const errorText = await response.text();
+                    showResponse('managementResponse', errorText, false);
+                }
+            } catch (error) {
+                showResponse('managementResponse', `Error: ${error.message}`, false);
+            }
+        }
+
+        async function deleteItemPrompt() {
+            if (!isLoggedIn) {
+                showResponse('managementResponse', 'Please log in first', false);
+                return;
+            }
+
+            const id = prompt('Enter the ID of the item to delete:');
+            if (id) {
+                await deleteItem(id);
+            }
+        }
+
+        async function deleteItem(id) {
+            if (!isLoggedIn) return;
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/storageitems/${id}`, {
+                    method: 'DELETE'
+                });
+
+                if (response.ok) {
+                    showResponse('managementResponse', `Item ${id} deleted successfully`, true);
+                    getAllItems();
+                } else {
+                    showResponse('managementResponse', `Failed to delete item ${id}`, false);
+                }
+            } catch (error) {
+                showResponse('managementResponse', `Error: ${error.message}`, false);
+            }
+        }
+
+        // SUPPLIERS FUNCTIONS
+
+        async function addSupplier() {
+            if (!isLoggedIn) {
+                showResponse('managementResponse', 'Please log in first', false);
+                return;
+            }
+
+            const supplierData = {
+                name: document.getElementById('supplierName').value.trim() || null,
+                afm: document.getElementById('supplierAfm').value.trim() || null,
+                phoneNumber: document.getElementById('supplierPhone').value.trim() || null,
+                address: document.getElementById('supplierAddress').value.trim() || null,
+                email: document.getElementById('supplierEmail').value.trim() || null
+            };
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/suppliers`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(supplierData)
+                });
+
+                const result = await response.text();
+                showResponse('managementResponse', result, response.ok);
+                
+                if (response.ok) {
+                    document.getElementById('supplierName').value = '';
+                    document.getElementById('supplierAfm').value = '';
+                    document.getElementById('supplierPhone').value = '';
+                    document.getElementById('supplierAddress').value = '';
+                    document.getElementById('supplierEmail').value = '';
+                    getAllSuppliers();
+                    loadSuppliersIntoDropdown();
+                }
+            } catch (error) {
+                showResponse('managementResponse', `Error: ${error.message}`, false);
+            }
+        }
+
+        async function getAllSuppliers() {
+            if (!isLoggedIn) return;
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/suppliers`);
+                const suppliers = await response.json();
+                
+                allSuppliers = suppliers;
+                displaySuppliers(suppliers);
+                showResponse('managementResponse', `Found ${suppliers.length} suppliers`, true);
+            } catch (error) {
+                showResponse('managementResponse', `Error: ${error.message}`, false);
+            }
+        }
+
+        async function loadSupplierForUpdate() {
+            const id = document.getElementById('updateSupplierId').value;
+            
+            if (!id) {
+                document.getElementById('currentSupplierInfo').style.display = 'none';
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/suppliers/${id}`);
+                
+                if (response.ok) {
+                    const supplier = await response.json();
+                    
+                    document.getElementById('currentSupplierInfo').style.display = 'block';
+                    document.getElementById('currentSupplierName').textContent = supplier.name || '-';
+                    document.getElementById('currentSupplierAfm').textContent = supplier.afm || '-';
+                    document.getElementById('currentSupplierPhone').textContent = supplier.phoneNumber || '-';
+                    document.getElementById('currentSupplierAddress').textContent = supplier.address || '-';
+                    document.getElementById('currentSupplierEmail').textContent = supplier.email || '-';
+                    
+                    showResponse('managementResponse', `Loaded supplier: ${supplier.name || 'Unknown'}`, true);
+                } else {
+                    document.getElementById('currentSupplierInfo').style.display = 'none';
+                    showResponse('managementResponse', `Supplier with ID ${id} not found`, false);
+                }
+            } catch (error) {
+                document.getElementById('currentSupplierInfo').style.display = 'none';
+                showResponse('managementResponse', `Error loading supplier: ${error.message}`, false);
+            }
+        }
+
+        async function updateSupplier() {
+            if (!isLoggedIn) {
+                showResponse('managementResponse', 'Please log in first', false);
+                return;
+            }
+
+            const id = document.getElementById('updateSupplierId').value;
+            
+            if (!id) {
+                showResponse('managementResponse', 'Please enter a supplier ID', false);
+                return;
+            }
+
+            const supplierData = {
+                name: document.getElementById('updateSupplierName').value.trim() || null,
+                afm: document.getElementById('updateSupplierAfm').value.trim() || null,
+                phoneNumber: document.getElementById('updateSupplierPhone').value.trim() || null,
+                address: document.getElementById('updateSupplierAddress').value.trim() || null,
+                email: document.getElementById('updateSupplierEmail').value.trim() || null
+            };
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/suppliers/${id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(supplierData)
+                });
+
+                if (response.ok) {
+                    showResponse('managementResponse', `Supplier updated successfully!`, true);
+                    
+                    document.getElementById('updateSupplierId').value = '';
+                    document.getElementById('updateSupplierName').value = '';
+                    document.getElementById('updateSupplierAfm').value = '';
+                    document.getElementById('updateSupplierPhone').value = '';
+                    document.getElementById('updateSupplierAddress').value = '';
+                    document.getElementById('updateSupplierEmail').value = '';
+                    document.getElementById('currentSupplierInfo').style.display = 'none';
+                    getAllSuppliers();
+                    loadSuppliersIntoDropdown();
+                } else {
+                    const errorText = await response.text();
+                    showResponse('managementResponse', errorText, false);
+                }
+            } catch (error) {
+                showResponse('managementResponse', `Error: ${error.message}`, false);
+            }
+        }
+
+        async function deleteSupplierPrompt() {
+            if (!isLoggedIn) {
+                showResponse('managementResponse', 'Please log in first', false);
+                return;
+            }
+
+            const id = prompt('Enter the ID of the supplier to delete:');
+            if (id) {
+                await deleteSupplier(id);
+            }
+        }
+
+        async function deleteSupplier(id) {
+            if (!isLoggedIn) return;
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/suppliers/${id}`, {
+                    method: 'DELETE'
+                });
+
+                if (response.ok) {
+                    showResponse('managementResponse', `Supplier ${id} deleted successfully`, true);
+                    getAllSuppliers();
+                    loadSuppliersIntoDropdown();
+                } else {
+                    showResponse('managementResponse', `Failed to delete supplier ${id}`, false);
+                }
+            } catch (error) {
+                showResponse('managementResponse', `Error: ${error.message}`, false);
+            }
+        }
+
+        // SEARCH FUNCTIONALITY FOR ITEMS
+
+        function setSearchFilter(filter) {
+            currentSearchFilter = filter;
+            
+            document.querySelectorAll('#inventorySection .filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            performSearch();
+        }
+
+        function clearSearch() {
+            document.getElementById('searchInput').value = '';
+            currentSearchQuery = '';
+            document.getElementById('searchResults').style.display = 'none';
+            displayItems(allItems);
+            
+            currentSearchFilter = 'all';
+            document.querySelectorAll('#inventorySection .filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelector('#inventorySection .filter-btn').classList.add('active');
+        }
+
+        function performSearch() {
+            const query = document.getElementById('searchInput').value.toLowerCase().trim();
+            currentSearchQuery = query;
+            
+            if (query === '') {
+                displayItems(allItems);
+                document.getElementById('searchResults').style.display = 'none';
+                return;
+            }
+
+            let filteredItems = [];
+            
+            switch (currentSearchFilter) {
+                case 'name':
+                    filteredItems = allItems.filter(item => 
+                        item.name.toLowerCase().includes(query)
+                    );
+                    break;
+                case 'location':
+                    filteredItems = allItems.filter(item => 
+                        item.location.toLowerCase().includes(query)
+                    );
+                    break;
+                case 'quantity':
+                    filteredItems = allItems.filter(item => 
+                        item.quantity.toString().includes(query)
+                    );
+                    break;
+                case 'price':
+                    filteredItems = allItems.filter(item => 
+                        item.price && item.price.toString().includes(query)
+                    );
+                    break;
+                case 'supplier':
+                    filteredItems = allItems.filter(item => 
+                        item.supplierName && item.supplierName.toLowerCase().includes(query)
+                    );
+                    break;
+                default:
+                    filteredItems = allItems.filter(item => 
+                        item.name.toLowerCase().includes(query) ||
+                        item.location.toLowerCase().includes(query) ||
+                        item.quantity.toString().includes(query) ||
+                        (item.price && item.price.toString().includes(query)) ||
+                        (item.supplierName && item.supplierName.toLowerCase().includes(query))
+                    );
+            }
+
+            displayItems(filteredItems);
+            showSearchResults(filteredItems.length, query);
+        }
+
+        function showSearchResults(count, query) {
+            const resultsDiv = document.getElementById('searchResults');
+            const filterText = currentSearchFilter === 'all' ? 'all fields' : currentSearchFilter;
+            
+            if (count === 0) {
+                resultsDiv.innerHTML = `No items found for "<span class="highlight">${query}</span>" in ${filterText}`;
+            } else {
+                resultsDiv.innerHTML = `Found <strong>${count}</strong> item${count !== 1 ? 's' : ''} matching "<span class="highlight">${query}</span>" in ${filterText}`;
+            }
+            
+            resultsDiv.style.display = 'block';
+        }
+
+        function displayItems(items) {
+            const itemsDisplay = document.getElementById('itemsDisplay');
+            
+            if (items.length === 0) {
+                if (currentSearchQuery) {
+                    itemsDisplay.innerHTML = `
+                        <tr>
+                            <td colspan="8" style="text-align: center; padding: 40px;">
+                                <span style="font-size: 2em;">🔍</span><br>
+                                No items match your search criteria<br>
+                                <small>Try adjusting your search terms or filters</small>
+                            </td>
+                        </tr>
+                    `;
+                } else {
+                    itemsDisplay.innerHTML = '<tr><td colspan="8" style="text-align: center; padding: 40px;">No items found. Add some items to get started!</td></tr>';
+                }
+                return;
+            }
+
+            itemsDisplay.innerHTML = items.map(item => {
+                let displayName = item.name;
+                let displayLocation = item.location;
+                let displayQuantity = item.quantity.toString();
+                let displayPrice = item.price ? `€${item.price}` : '-';
+                let displaySupplier = item.supplierName || 'No supplier';
+                
+                if (currentSearchQuery) {
+                    const regex = new RegExp(`(${currentSearchQuery})`, 'gi');
+                    if (currentSearchFilter === 'all' || currentSearchFilter === 'name') {
+                        displayName = displayName.replace(regex, '<span class="highlight">$1</span>');
+                    }
+                    if (currentSearchFilter === 'all' || currentSearchFilter === 'location') {
+                        displayLocation = displayLocation.replace(regex, '<span class="highlight">$1</span>');
+                    }
+                    if (currentSearchFilter === 'all' || currentSearchFilter === 'quantity') {
+                        displayQuantity = displayQuantity.replace(regex, '<span class="highlight">$1</span>');
+                    }
+                    if (currentSearchFilter === 'all' || currentSearchFilter === 'price') {
+                        displayPrice = displayPrice.replace(regex, '<span class="highlight">$1</span>');
+                    }
+                    if (currentSearchFilter === 'all' || currentSearchFilter === 'supplier') {
+                        displaySupplier = displaySupplier.replace(regex, '<span class="highlight">$1</span>');
+                    }
+                }
+                
+                return `
+                    <tr>
+                        <td>${item.id}</td>
+                        <td>${displayName}</td>
+                        <td>${displayQuantity}</td>
+                        <td>${displayLocation}</td>
+                        <td>${displayPrice}</td>
+                        <td>${displaySupplier}</td>
+                        <td>${new Date(item.createdAt).toLocaleDateString()}</td>
+                        <td>
+                            <button class="btn btn-warning" onclick="quickEdit(${item.id})">Edit</button>
+                            <button class="btn btn-danger" onclick="deleteItem(${item.id})">Delete</button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // SEARCH FUNCTIONALITY FOR SUPPLIERS
+
+        function setSuppliersSearchFilter(filter) {
+            currentSuppliersSearchFilter = filter;
+            
+            document.querySelectorAll('#suppliersSection .filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            performSuppliersSearch();
+        }
+
+        function clearSuppliersSearch() {
+            document.getElementById('suppliersSearchInput').value = '';
+            currentSuppliersSearchQuery = '';
+            document.getElementById('suppliersSearchResults').style.display = 'none';
+            displaySuppliers(allSuppliers);
+            
+            currentSuppliersSearchFilter = 'all';
+            document.querySelectorAll('#suppliersSection .filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelector('#suppliersSection .filter-btn').classList.add('active');
+        }
+
+        function performSuppliersSearch() {
+            const query = document.getElementById('suppliersSearchInput').value.toLowerCase().trim();
+            currentSuppliersSearchQuery = query;
+            
+            if (query === '') {
+                displaySuppliers(allSuppliers);
+                document.getElementById('suppliersSearchResults').style.display = 'none';
+                return;
+            }
+
+            let filteredSuppliers = [];
+            
+            switch (currentSuppliersSearchFilter) {
+                case 'name':
+                    filteredSuppliers = allSuppliers.filter(supplier => 
+                        supplier.name && supplier.name.toLowerCase().includes(query)
+                    );
+                    break;
+                case 'afm':
+                    filteredSuppliers = allSuppliers.filter(supplier => 
+                        supplier.afm && supplier.afm.toLowerCase().includes(query)
+                    );
+                    break;
+                case 'phone':
+                    filteredSuppliers = allSuppliers.filter(supplier => 
+                        supplier.phoneNumber && supplier.phoneNumber.toLowerCase().includes(query)
+                    );
+                    break;
+                case 'email':
+                    filteredSuppliers = allSuppliers.filter(supplier => 
+                        supplier.email && supplier.email.toLowerCase().includes(query)
+                    );
+                    break;
+                default:
+                    filteredSuppliers = allSuppliers.filter(supplier => 
+                        (supplier.name && supplier.name.toLowerCase().includes(query)) ||
+                        (supplier.afm && supplier.afm.toLowerCase().includes(query)) ||
+                        (supplier.phoneNumber && supplier.phoneNumber.toLowerCase().includes(query)) ||
+                        (supplier.address && supplier.address.toLowerCase().includes(query)) ||
+                        (supplier.email && supplier.email.toLowerCase().includes(query))
+                    );
+            }
+
+            displaySuppliers(filteredSuppliers);
+            showSuppliersSearchResults(filteredSuppliers.length, query);
+        }
+
+        function showSuppliersSearchResults(count, query) {
+            const resultsDiv = document.getElementById('suppliersSearchResults');
+            const filterText = currentSuppliersSearchFilter === 'all' ? 'all fields' : currentSuppliersSearchFilter;
+            
+            if (count === 0) {
+                resultsDiv.innerHTML = `No suppliers found for "<span class="highlight">${query}</span>" in ${filterText}`;
+            } else {
+                resultsDiv.innerHTML = `Found <strong>${count}</strong> supplier${count !== 1 ? 's' : ''} matching "<span class="highlight">${query}</span>" in ${filterText}`;
+            }
+            
+            resultsDiv.style.display = 'block';
+        }
+
+        function displaySuppliers(suppliers) {
+            const suppliersDisplay = document.getElementById('suppliersDisplay');
+            
+            if (suppliers.length === 0) {
+                if (currentSuppliersSearchQuery) {
+                    suppliersDisplay.innerHTML = `
+                        <tr>
+                            <td colspan="8" style="text-align: center; padding: 40px;">
+                                <span style="font-size: 2em;">🔍</span><br>
+                                No suppliers match your search criteria<br>
+                                <small>Try adjusting your search terms or filters</small>
+                            </td>
+                        </tr>
+                    `;
+                } else {
+                    suppliersDisplay.innerHTML = '<tr><td colspan="8" style="text-align: center; padding: 40px;">No suppliers found. Add some suppliers to get started!</td></tr>';
+                }
+                return;
+            }
+
+            suppliersDisplay.innerHTML = suppliers.map(supplier => {
+                let displayName = supplier.name || '-';
+                let displayAfm = supplier.afm || '-';
+                let displayPhone = supplier.phoneNumber || '-';
+                let displayAddress = supplier.address || '-';
+                let displayEmail = supplier.email || '-';
+                
+                if (currentSuppliersSearchQuery) {
+                    const regex = new RegExp(`(${currentSuppliersSearchQuery})`, 'gi');
+                    if (currentSuppliersSearchFilter === 'all' || currentSuppliersSearchFilter === 'name') {
+                        displayName = displayName.replace(regex, '<span class="highlight">$1</span>');
+                    }
+                    if (currentSuppliersSearchFilter === 'all' || currentSuppliersSearchFilter === 'afm') {
+                        displayAfm = displayAfm.replace(regex, '<span class="highlight">$1</span>');
+                    }
+                    if (currentSuppliersSearchFilter === 'all' || currentSuppliersSearchFilter === 'phone') {
+                        displayPhone = displayPhone.replace(regex, '<span class="highlight">$1</span>');
+                    }
+                    if (currentSuppliersSearchFilter === 'all' || currentSuppliersSearchFilter === 'email') {
+                        displayEmail = displayEmail.replace(regex, '<span class="highlight">$1</span>');
+                    }
+                    if (currentSuppliersSearchFilter === 'all') {
+                        displayAddress = displayAddress.replace(regex, '<span class="highlight">$1</span>');
+                    }
+                }
+                
+                return `
+                    <tr>
+                        <td>${supplier.id}</td>
+                        <td>${displayName}</td>
+                        <td>${displayAfm}</td>
+                        <td>${displayPhone}</td>
+                        <td>${displayAddress}</td>
+                        <td>${displayEmail}</td>
+                        <td>${new Date(supplier.createdAt).toLocaleDateString()}</td>
+                        <td>
+                            <button class="btn btn-warning" onclick="quickEditSupplier(${supplier.id})">Edit</button>
+                            <button class="btn btn-danger" onclick="deleteSupplier(${supplier.id})">Delete</button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // Quick edit functions
+        function quickEdit(itemId) {
+            document.getElementById('updateId').value = itemId;
+            loadItemForUpdate();
+            showTab('items');
+            document.getElementById('managementSection').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function quickEditSupplier(supplierId) {
+            document.getElementById('updateSupplierId').value = supplierId;
+            loadSupplierForUpdate();
+            showTab('suppliers');
+            document.getElementById('managementSection').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Show Response
+        function showResponse(elementId, message, isSuccess) {
+            const responseElement = document.getElementById(elementId);
+            responseElement.textContent = message;
+            responseElement.className = `response ${isSuccess ? 'success' : 'error'}`;
+            responseElement.style.display = 'block';
+            
+            setTimeout(() => {
+                responseElement.style.display = 'none';
+            }, 5000);
+        }
+
+        // Event listeners
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('loginPassword').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    loginUser();
+                }
+            });
+            
+            document.getElementById('searchInput').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    performSearch();
+                }
+            });
+            
+            document.getElementById('suppliersSearchInput').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    performSuppliersSearch();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
+
